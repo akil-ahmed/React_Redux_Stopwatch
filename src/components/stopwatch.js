@@ -1,15 +1,29 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+// watch better solution here : https://codepen.io/seoh/pen/PPZYQy?q=stopwatch&order=popularity&depth=everything&show_forks=false
+
 class Stopwatch extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-           seconds: 0,
-           incrementer: null,
-           initialIncrementor: null,
-           lap: []
-        }
-      }
-     handleStartClick() {
+
+  constructor(props) {
+    super(props);
+    this.state = { 
+      seconds: 0,
+      incrementer: null,
+      initialIncrementor: null,
+      lap: []
+     };
+  }
+
+  getSeconds() {
+    return ('0' + this.state.seconds % 60).slice(-2);
+  }
+
+  getMinutes() {
+    return (Math.floor(this.state.seconds / 60));
+  }
+
+  handleStartClick() {
         this.incrementer = setInterval( () =>
         this.setState({
             seconds: this.state.seconds + 1
@@ -26,7 +40,6 @@ class Stopwatch extends Component {
          this.setState ({
              lap: this.state.lap.concat([this.state.seconds])
          })
-         console.log(this.state.lap)
      }
 
      handleResetClick(){
@@ -37,7 +50,8 @@ class Stopwatch extends Component {
             lap: []
             });
      }
-    render() {
+
+   render() {
         const totalseconds =  ("0" + this.state.seconds % 60).slice(-2);
         const totalMinutes = Math.floor(this.state.seconds / 60);
         let button;
@@ -63,39 +77,46 @@ class Stopwatch extends Component {
             button2 = <Resetbutton onClick = {this.handleResetClick.bind(this)}/>
         }
         return (
-            <div>
-                <h1>Stopwatch:
-                    {totalMinutes}:{totalseconds}
-                </h1>
-                {button}{button2}
+            <div className = "main">
+                <div className = "head">
+                    <h1>
+                        {totalMinutes}:{totalseconds}
+                    </h1>
+                </div>
+                <div className = "buttons">
+                    {button}{button2}
+                </div>
+                <div className = "lap">
                 <ul>
                     { this.state.lap.map((lap, index) =>
-                        <li><strong>Lap {index + 1}  </strong>{timer(lap)}</li>)
+                        <li key= {index + 1}><strong>Lap {index + 1}  </strong>{timer(lap)}</li>)
                     }
+                    
                 </ul>
+                </div>
             </div>
         )
     }
+    
 }
-
 function Startbutton (props) {
     return (
       <div>
-          <button onClick={props.onClick}>Start</button>
+          <button className = "green button1" onClick={props.onClick}>Start</button>
       </div>
     )
   }
   function Stopbutton (props) {
     return (
       <div>
-          <button onClick={props.onClick}>Stop</button>
+          <button className = "red button1" onClick={props.onClick}>Stop</button>
       </div>
     )
   }
   function Lapbutton (props) {
     return (
       <div>
-          <button onClick={props.onClick}>Lap</button>
+          <button className = "green button2" onClick={props.onClick}>Lap</button>
       </div>
     )
   }
@@ -103,9 +124,9 @@ function Startbutton (props) {
   function Resetbutton (props) {
     return (
       <div>
-          <button onClick={props.onClick}>Reset</button>
+          <button className = "red button2" onClick={props.onClick}>Reset</button>
       </div>
     )
   }
 
-export default Stopwatch;
+export default connect()(Stopwatch)
